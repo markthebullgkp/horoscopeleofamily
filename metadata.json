@@ -1,0 +1,7 @@
+{
+  "name": "Jyotish Vision - Vedic Birth Chart Analysis",
+  "description": "A precise and trustworthy Vedic Astrology tool providing detailed birth chart (Kundli) analysis, planetary strengths, dasha insights, and numerological alignment.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

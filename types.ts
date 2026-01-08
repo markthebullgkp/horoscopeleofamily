@@ -19,6 +19,12 @@ export interface Yoga {
   effect: string;
 }
 
+export interface TargetedRemedy {
+  issue: string;
+  suggestion: string;
+  context: string;
+}
+
 export interface VedicReport {
   overview: {
     lagna: string;
@@ -76,5 +82,6 @@ export interface VedicReport {
     charity?: string;
     color?: string;
     weekday?: string;
+    targetedRemedies: TargetedRemedy[];
   };
 }

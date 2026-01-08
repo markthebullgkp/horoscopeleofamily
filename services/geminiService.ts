@@ -6,17 +6,11 @@ const SYSTEM_INSTRUCTION = `You are an expert Vedic Astrologer, trained in Class
 Your goal is to provide a PRECISE and TRUSTWORTHY Birth Chart (Kundli) analysis using the Sidereal Zodiac and Lahiri Ayanamsa.
 
 Core Requirements:
-1. Provide a detailed analysis of the Rashi Chart (D1).
-2. Provide a basic analysis of the Navamsa Chart (D9).
-3. Explain how the D9 chart modifies or confirms D1 insights, specifically for marriage, relationships, and spiritual development.
-4. Use the "Tree (D1) vs Fruit (D9)" analogy to explain their relationship.
-
-Guidelines:
-- Do NOT exaggerate results or create fear-based predictions.
-- Avoid exact event timing.
-- Use classical Vedic terminology (Lagna, Rashi, Bhava, Navamsa, etc.) with brief explanations.
-- Predictions must be probabilistic.
-- Remedies must be OPTIONAL and minimal.
+1. Provide a detailed analysis of the Rashi Chart (D1) and Navamsa Chart (D9).
+2. Explain the interplay between D1 and D9 for relationships and spiritual growth.
+3. Identify specific planetary afflictions (combustion, debilitation, difficult aspects) and provide targeted, minimal remedies.
+4. Remedies must be non-superstitious, ethical, and focus on habit shifts, charity, or simple mindfulness practices.
+5. Maintain a compassionate, empowering tone. Emphasize that remedies are optional tools for self-alignment.
 
 Format your response as a valid JSON object matching the requested schema.`;
 
@@ -29,11 +23,10 @@ export const generateAstrologyReport = async (details: BirthDetails): Promise<Ve
   TOB: ${details.tob}
   POB: ${details.pob}
   
-  Include:
-  1. Full Rashi (D1) Analysis.
-  2. Full Navamsa (D9) Analysis including planetary positions in D9.
-  3. Relationship between D1 and D9.
-  4. Life themes, Yogas, Dasha, Transits, and Numerology.
+  Special Focus:
+  - Analyze planetary strengths in both D1 and D9.
+  - Look for specific afflictions (e.g., afflicted Moon, weak Lagna Lord, combust Mercury).
+  - Propose personalized remedies that address these specific findings.
   
   Please provide the report in JSON format.`;
 
@@ -168,7 +161,19 @@ export const generateAstrologyReport = async (details: BirthDetails): Promise<Ve
               charity: { type: Type.STRING },
               color: { type: Type.STRING },
               weekday: { type: Type.STRING },
-            }
+              targetedRemedies: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    issue: { type: Type.STRING, description: "The specific planetary affliction or weakness identified." },
+                    suggestion: { type: Type.STRING, description: "The recommended action or shift." },
+                    context: { type: Type.STRING, description: "Why this helps based on Jyotish principles." }
+                  }
+                }
+              }
+            },
+            required: ["targetedRemedies"]
           }
         },
         required: ["overview", "placements", "navamsa", "analysis", "yogas", "career", "relationships", "health", "dasha", "transits", "numerology", "remedies"]

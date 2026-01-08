@@ -174,60 +174,72 @@ const ReportView: React.FC<ReportViewProps> = ({ report, onReset }) => {
             </Card>
           </div>
 
-          {/* Career & Wealth */}
-          <Card>
-            <SectionTitle title="Career & Wealth" />
-            <div className="space-y-4">
-              <div>
-                <p className="text-stone-400 text-xs uppercase mb-2">Potential Domains</p>
-                <div className="flex flex-wrap gap-2">
-                  {report.career.domains.map((d, i) => (
-                    <span key={i} className="bg-stone-800 text-stone-200 px-2 py-1 rounded text-xs">{d}</span>
-                  ))}
-                </div>
+          {/* Remedies Section Refined */}
+          <Card className="border-emerald-900/30 bg-emerald-900/5">
+            <SectionTitle title="Dharma & Remedies" subtitle="Alignment & Harmonization" />
+            <div className="space-y-8">
+              <div className="bg-emerald-900/10 p-4 rounded-xl border border-emerald-900/20">
+                <p className="text-xs text-emerald-500 leading-relaxed italic">
+                  Ethical Note: These suggestions are optional tools for psychological and spiritual alignment. 
+                  They work through conscious habit-shifting and symbolic resonance to help balance planetary archetypes within.
+                </p>
               </div>
-              <p className="text-sm text-stone-300 leading-relaxed italic">
-                {report.career.wealthTendencies}
-              </p>
-            </div>
-          </Card>
 
-          {/* Dasha & Transits */}
-          <Card className="bg-amber-900/5 border-amber-900/20">
-            <SectionTitle title="Current Timeline" subtitle="Dasha & Transits" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h4 className="text-amber-500 font-bold text-sm mb-2">Mahadasha: {report.dasha.currentMahadasha}</h4>
-                <p className="text-xs text-stone-400 uppercase tracking-widest mb-4">Theme: {report.dasha.theme}</p>
-                <p className="text-sm text-stone-300">{report.dasha.focus}</p>
-              </div>
-              <div>
-                <h4 className="text-amber-500 font-bold text-sm mb-2">Transit (Current Year)</h4>
-                <p className="text-sm text-stone-300 mb-2">{report.transits.influences}</p>
-                <div className="flex gap-4 mt-4 text-xs font-bold uppercase">
-                  <span className="text-emerald-400">Opportunity: {report.transits.opportunity}</span>
-                  <span className="text-rose-400">Caution: {report.transits.caution}</span>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Remedies */}
-          <Card className="border-emerald-900/20 bg-emerald-900/5">
-            <SectionTitle title="Dharma & Remedies" subtitle="Guidance for Alignment" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {report.remedies.mantra && (
+              {/* Targeted Remedies */}
+              {report.remedies.targetedRemedies && report.remedies.targetedRemedies.length > 0 && (
                 <div>
-                  <h4 className="text-emerald-500 font-bold text-xs uppercase mb-1">Mantra</h4>
-                  <p className="text-sm text-stone-300 italic">{report.remedies.mantra}</p>
+                  <h3 className="text-stone-400 text-xs uppercase tracking-[0.2em] mb-4">Targeted Celestial Guidance</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {report.remedies.targetedRemedies.map((tr, i) => (
+                      <div key={i} className="bg-stone-900/60 p-4 rounded-xl border border-stone-800 hover:border-emerald-900/40 transition-colors">
+                        <div className="text-[10px] text-emerald-500 font-bold uppercase mb-1">Affliction: {tr.issue}</div>
+                        <div className="text-sm text-amber-200 font-medium mb-1">{tr.suggestion}</div>
+                        <div className="text-xs text-stone-500 leading-relaxed">{tr.context}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
-              {report.remedies.charity && (
-                <div>
-                  <h4 className="text-emerald-500 font-bold text-xs uppercase mb-1">Charity/Service</h4>
-                  <p className="text-sm text-stone-300">{report.remedies.charity}</p>
+
+              {/* General Alignment */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-emerald-900/10">
+                <div className="space-y-4">
+                  {report.remedies.mantra && (
+                    <div>
+                      <h4 className="text-emerald-500 font-bold text-[10px] uppercase tracking-widest mb-1">Mantra / Affirmation</h4>
+                      <p className="text-sm text-stone-300 italic">{report.remedies.mantra}</p>
+                    </div>
+                  )}
+                  {report.remedies.charity && (
+                    <div>
+                      <h4 className="text-emerald-500 font-bold text-[10px] uppercase tracking-widest mb-1">Service (Seva)</h4>
+                      <p className="text-sm text-stone-300">{report.remedies.charity}</p>
+                    </div>
+                  )}
                 </div>
-              )}
+                <div className="space-y-4">
+                  {report.remedies.habit && (
+                    <div>
+                      <h4 className="text-emerald-500 font-bold text-[10px] uppercase tracking-widest mb-1">Daily Alignment</h4>
+                      <p className="text-sm text-stone-300">{report.remedies.habit}</p>
+                    </div>
+                  )}
+                  <div className="flex gap-8">
+                    {report.remedies.color && (
+                      <div>
+                        <h4 className="text-emerald-500 font-bold text-[10px] uppercase tracking-widest mb-1">Varna (Color)</h4>
+                        <p className="text-sm text-stone-300">{report.remedies.color}</p>
+                      </div>
+                    )}
+                    {report.remedies.weekday && (
+                      <div>
+                        <h4 className="text-emerald-500 font-bold text-[10px] uppercase tracking-widest mb-1">Key Day</h4>
+                        <p className="text-sm text-stone-300">{report.remedies.weekday}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </Card>
 

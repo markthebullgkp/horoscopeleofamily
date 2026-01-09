@@ -1,8 +1,9 @@
-import { GoogleGenerativeAI } from "@google/genai"; // लाइब्रेरी को अपडेट किया
+// 'GoogleGenerativeAI' के बजाय '*' का उपयोग करें
+import * as GoogleGenerativeAIModule from "@google/genai";
 import { BirthDetails, VedicReport } from "../types";
 
-// Vite में Environment variables को एक्सेस करने का सही तरीका
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+// यहाँ 'GoogleGenerativeAI' को मॉड्यूल से निकालें
+const GoogleGenerativeAI = (GoogleGenerativeAIModule as any).GoogleGenerativeAI || GoogleGenerativeAIModule.GoogleGenAI;
 
 const SYSTEM_INSTRUCTION = `You are an expert Vedic Astrologer, trained in Classical Jyotish (Parashara, Jaimini principles).
 Your goal is to provide a PRECISE and TRUSTWORTHY Birth Chart (Kundli) analysis using the Sidereal Zodiac and Lahiri Ayanamsa.

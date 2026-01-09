@@ -1,6 +1,8 @@
-
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/genai"; // लाइब्रेरी को अपडेट किया
 import { BirthDetails, VedicReport } from "../types";
+
+// Vite में Environment variables को एक्सेस करने का सही तरीका
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 
 const SYSTEM_INSTRUCTION = `You are an expert Vedic Astrologer, trained in Classical Jyotish (Parashara, Jaimini principles).
 Your goal is to provide a PRECISE and TRUSTWORTHY Birth Chart (Kundli) analysis using the Sidereal Zodiac and Lahiri Ayanamsa.
@@ -14,9 +16,22 @@ Core Requirements:
 
 Format your response as a valid JSON object matching the requested schema.`;
 
+// Initialize Google AI
+const genAI = new GoogleGenerativeAI(API_KEY || "");
+
 export const generateAstrologyReport = async (details: BirthDetails): Promise<VedicReport> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  
+  if (!API_KEY) {
+    throw new Error("Gemini API Key is missing. Please set it in Netlify environment variables.");
+  }
+
+  // Model initialization with system instructions
+  const model = genAI.getGenerativeModel({ 
+    model: "gemini-1.5-flash", // मॉडल नाम को स्टेबल वर्जन पर अपडेट किया
+    generationConfig: {
+      responseMimeType: "application/json",
+    }
+  });
+
   const prompt = `Generate a detailed Vedic Astrology report for:
   Name: ${details.fullName}
   DOB: ${details.dob}
@@ -28,160 +43,19 @@ export const generateAstrologyReport = async (details: BirthDetails): Promise<Ve
   - Look for specific afflictions (e.g., afflicted Moon, weak Lagna Lord, combust Mercury).
   - Propose personalized remedies that address these specific findings.
   
-  Please provide the report in JSON format.`;
+  Please provide the report in JSON format matching the schema provided in system instructions.`;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: prompt,
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION,
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          overview: {
-            type: Type.OBJECT,
-            properties: {
-              lagna: { type: Type.STRING },
-              moonSign: { type: Type.STRING },
-              sunSign: { type: Type.STRING },
-              dominantElement: { type: Type.STRING },
-              dominantGuna: { type: Type.STRING },
-            },
-            required: ["lagna", "moonSign", "sunSign", "dominantElement", "dominantGuna"]
-          },
-          placements: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                planet: { type: Type.STRING },
-                sign: { type: Type.STRING },
-                house: { type: Type.NUMBER },
-                nakshatra: { type: Type.STRING },
-                strength: { type: Type.STRING },
-              },
-              required: ["planet", "sign", "house", "nakshatra", "strength"]
-            }
-          },
-          navamsa: {
-            type: Type.OBJECT,
-            properties: {
-              lagna: { type: Type.STRING },
-              placements: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    planet: { type: Type.STRING },
-                    sign: { type: Type.STRING },
-                    house: { type: Type.NUMBER },
-                    nakshatra: { type: Type.STRING },
-                    strength: { type: Type.STRING },
-                  }
-                }
-              },
-              relationshipInsight: { type: Type.STRING },
-              spiritualInsight: { type: Type.STRING },
-              significanceExplanation: { type: Type.STRING },
-            },
-            required: ["lagna", "placements", "relationshipInsight", "spiritualInsight", "significanceExplanation"]
-          },
-          analysis: {
-            type: Type.OBJECT,
-            properties: {
-              mind: { type: Type.STRING },
-              intelligence: { type: Type.STRING },
-              action: { type: Type.STRING },
-              growth: { type: Type.STRING },
-              discipline: { type: Type.STRING },
-            },
-            required: ["mind", "intelligence", "action", "growth", "discipline"]
-          },
-          yogas: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                name: { type: Type.STRING },
-                effect: { type: Type.STRING },
-              }
-            }
-          },
-          career: {
-            type: Type.OBJECT,
-            properties: {
-              domains: { type: Type.ARRAY, items: { type: Type.STRING } },
-              wealthTendencies: { type: Type.STRING },
-            }
-          },
-          relationships: {
-            type: Type.OBJECT,
-            properties: {
-              emotionalPatterns: { type: Type.STRING },
-              marriageTendencies: { type: Type.STRING },
-            }
-          },
-          health: {
-            type: Type.OBJECT,
-            properties: {
-              sensitiveAreas: { type: Type.ARRAY, items: { type: Type.STRING } },
-              lifestyleGuidance: { type: Type.STRING },
-            }
-          },
-          dasha: {
-            type: Type.OBJECT,
-            properties: {
-              currentMahadasha: { type: Type.STRING },
-              theme: { type: Type.STRING },
-              focus: { type: Type.STRING },
-            }
-          },
-          transits: {
-            type: Type.OBJECT,
-            properties: {
-              influences: { type: Type.STRING },
-              caution: { type: Type.STRING },
-              opportunity: { type: Type.STRING },
-            }
-          },
-          numerology: {
-            type: Type.OBJECT,
-            properties: {
-              driver: { type: Type.NUMBER },
-              conductor: { type: Type.NUMBER },
-              traits: { type: Type.STRING },
-            }
-          },
-          remedies: {
-            type: Type.OBJECT,
-            properties: {
-              mantra: { type: Type.STRING },
-              habit: { type: Type.STRING },
-              charity: { type: Type.STRING },
-              color: { type: Type.STRING },
-              weekday: { type: Type.STRING },
-              targetedRemedies: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    issue: { type: Type.STRING, description: "The specific planetary affliction or weakness identified." },
-                    suggestion: { type: Type.STRING, description: "The recommended action or shift." },
-                    context: { type: Type.STRING, description: "Why this helps based on Jyotish principles." }
-                  }
-                }
-              }
-            },
-            required: ["targetedRemedies"]
-          }
-        },
-        required: ["overview", "placements", "navamsa", "analysis", "yogas", "career", "relationships", "health", "dasha", "transits", "numerology", "remedies"]
-      }
-    }
-  });
+  try {
+    // Generate content using the SDK
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-  const text = response.text;
-  if (!text) throw new Error("Empty response from AI");
-  return JSON.parse(text) as VedicReport;
+    if (!text) throw new Error("Empty response from AI");
+    
+    return JSON.parse(text) as VedicReport;
+  } catch (error) {
+    console.error("Error in generateAstrologyReport:", error);
+    throw error;
+  }
 };

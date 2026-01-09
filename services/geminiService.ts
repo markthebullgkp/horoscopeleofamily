@@ -13,22 +13,15 @@ export const generateAstrologyReport = async (details: BirthDetails): Promise<Ve
   const ai = new GoogleGenAI({ apiKey: API_KEY });
   
   try {
-    const result = await ai.models.generateContent({
-      // मॉडल का नाम बदल कर 'gemini-pro' या 'gemini-1.5-flash-latest' करें
-      model: 'gemini-pro', 
-      contents: `Generate a detailed Vedic Astrology report for:
-        Name: ${details.fullName}
-        DOB: ${details.dob}
-        TOB: ${details.tob}
-        POB: ${details.pob}
-        
-        Please provide the report in JSON format.`,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        responseMimeType: "application/json",
-      }
-    });
-
+    // geminiService.ts ke andar model line ko aise update karein:
+const result = await ai.models.generateContent({
+  model: 'models/gemini-1.5-flash', // 'models/' prefix lagana zaroori hai
+  contents: prompt,
+  config: {
+    systemInstruction: SYSTEM_INSTRUCTION,
+    responseMimeType: "application/json",
+  }
+});
     const text = result.response.text();
     return JSON.parse(text) as VedicReport;
   } catch (error) {
